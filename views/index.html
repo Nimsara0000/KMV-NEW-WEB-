@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KMV Students List</title>
+    <style>
+        .student { border: 1px solid #ccc; padding: 10px; margin: 10px; border-radius: 5px; }
+        img { width: 100px; height: 100px; object-fit: cover; }
+    </style>
+</head>
+<body>
+    <h2>KMV Students List</h2>
+    <div id="students"></div>
+
+    <script>
+        function loadStudents() {
+            fetch('/students')
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('students');
+                container.innerHTML = '';
+                const grades = {};
+                data.forEach(s => {
+                    if(!grades[s.grade]) grades[s.grade] = [];
+                    grades[s.grade].push(s);
+                });
+                for(const grade in grades) {
+                    const gradeDiv = document.createElement('div');
+                    gradeDiv.innerHTML = `<h3>Grade ${grade}</h3>`;
+                    grades[grade].forEach(s => {
+                        const div = document.createElement('div');
+                        div.className = 'student';
+                        div.innerHTML = `
+                            <img src="${s.photo_path}" alt="${s.full_name}" />
+                            <p>${s.full_name}<br/>
+                            Phone: ${s.phone}<br/>
+                            Father: ${s.father_name}<br/>
+                            Mother: ${s.mother_name}</p>
+                        `;
+                        gradeDiv.appendChild(div);
+                    });
+                    container.appendChild(gradeDiv);
+                }
+            });
+        }
+        loadStudents();
+        setInterval(loadStudents, 5000);
+    </script>
+</body>
+</html>
